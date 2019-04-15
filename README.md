@@ -1,2 +1,1 @@
-# api3
-DataMe API Sprint 3
+# API django backend
