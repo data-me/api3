@@ -191,13 +191,13 @@ class PaypalUserPlanPaymentView(APIView):
                     response['UserCodeErrorMessage'] = 'None.'
                     return JsonResponse(response, safe=False)
 
-                numberOfMonths = (userplan.expirationDate.year - userplan.startDate.year) \
-                                 + (userplan.expirationDate.month - userplan.startDate.month)
+                numberOfMonths = (userplan.expirationDate.year - userplan.startDate.year) * 12 + (userplan.expirationDate.month - userplan.startDate.month)
 
-                amountToChargeNMonths = ((userplan.expirationDate.year - userplan.startDate.year) * 12
-                                     + (userplan.expirationDate.month - userplan.startDate.month)) * 5.0
+                amountToChargeNMonths = ((userplan.expirationDate.year - userplan.startDate.year) * 12 + (userplan.expirationDate.month - userplan.startDate.month)) * 5.0
 
-                print('Pagos.views.PaypalUserPlanPaymentView: Months that are being payed:' + str(amountToChargeNMonths))
+                print('Pagos.views.PaypalUserPlanPaymentView: EUR that are being payed:' + str(amountToChargeNMonths))
+                print(
+                    'Pagos.views.PaypalUserPlanPaymentView: Nº of months that are being payed:' + str(numberOfMonths))
 
                 #Configuring PayPal payment
                 paypalrestsdk.configure({
@@ -234,13 +234,15 @@ class PaypalUserPlanPaymentView(APIView):
                                 {
                                     "name": str(numberOfMonths) + " months of PRO user plan.",
                                     "sku": str(userplan.id),
-                                    "price": 5.0,
+                                    "price": str(5.00),
                                     "currency": "EUR",
-                                    "quantity": numberOfMonths,
+                                    "quantity": str(numberOfMonths),
                                 }
                             ]},
                     }]
                 })
+
+                print('User Plan that is being created ' + str(payment.to_dict()))
 
                 # Create payment
                 if payment.create():
