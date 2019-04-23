@@ -19,7 +19,7 @@ class Message(models.Model):
     receiver = models.ForeignKey(User, related_name='receiver', on_delete=models.CASCADE)
     sender = models.ForeignKey(User, related_name='sender', on_delete=models.CASCADE)
     title = models.CharField('title', max_length = 100)
-    body = models.TextField('body', max_length = 250)
+    body = models.TextField('body', max_length = 1000)
     moment = models.DateTimeField(auto_now=True)
     isAlert = models.BooleanField(default=False)
     def __str__(self):
@@ -29,7 +29,7 @@ class Message(models.Model):
 class Company(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField('Name', max_length = 30)
-    description = models.TextField('Description', max_length = 50)
+    description = models.TextField('Description', max_length = 1000)
     nif = models.CharField('NIF', max_length = 9)
     logo = models.URLField('Logo URL')
 
@@ -69,13 +69,13 @@ class Offer(models.Model):
 
 
     title = models.CharField('Offer title', max_length = 80)
-    description = models.TextField('Offer description')
+    description = models.TextField('Offer description', max_length = 1000)
     price_offered = models.FloatField('Price offered')
     creation_date = models.DateTimeField(auto_now_add=True)
     limit_time = models.DateTimeField(blank=True)
     finished = models.BooleanField(default=False)
     files = models.URLField()
-    contract = models.TextField('Contract')
+    contract = models.TextField('Contract', max_length = 2000)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -92,7 +92,7 @@ class Submition(models.Model):
     dataScientist = models.ForeignKey(DataScientist, on_delete=models.CASCADE)
     offer = models.OneToOneField(Offer, on_delete=models.CASCADE,)
     file = models.CharField('File', max_length = 100)
-    comments = models.CharField('Comments', max_length = 100)
+    comments = models.TextField('Comments', max_length = 1000)
     status = models.CharField('Status', max_length = 9, choices = STATUS_CHOICES)
 
 
@@ -109,7 +109,7 @@ class Apply(models.Model):
     )
 
     title = models.CharField('Apply title', max_length = 80)
-    description = models.TextField('Apply description')
+    description = models.TextField('Apply description', max_length = 1000)
     date = models.DateTimeField(auto_now_add=True)
     status = models.CharField('Status',max_length = 8, choices = STATUS_CHOICES)
     dataScientist = models.ForeignKey(DataScientist, default="",on_delete=models.CASCADE)
@@ -144,7 +144,7 @@ class Section(models.Model):
 class Item(models.Model):
     name = models.CharField("Name", max_length=50)
     section = models.ForeignKey("datame.Section", on_delete = models.CASCADE, related_name = 'items')
-    description = models.CharField("Description", max_length=500)
+    description = models.TextField("Description", max_length = 1000)
     entity = models.CharField("Entity", max_length=50, blank=True,null=True)
     date_start = models.DateField("Start date")
     date_finish = models.DateField("End date", blank=True, null=True)
