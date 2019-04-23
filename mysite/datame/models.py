@@ -7,6 +7,14 @@ from django.db.models.fields.related import OneToOneField
 
 # Create your models here.
 
+class Review(models.Model):
+    reviewed = models.ForeignKey(User, related_name='reviewed', on_delete=models.CASCADE)
+    reviewer = models.ForeignKey(User, related_name='reviewer', on_delete=models.CASCADE)
+    score = models.FloatField('score')
+    comments = models.TextField('comments', max_length = 1000)
+    def __str__(self):
+        return self.comments
+
 class Message(models.Model):
     receiver = models.ForeignKey(User, related_name='receiver', on_delete=models.CASCADE)
     sender = models.ForeignKey(User, related_name='sender', on_delete=models.CASCADE)
@@ -40,13 +48,13 @@ class DataScientist(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 class UserPlan(models.Model):
-    
+
     TYPE_CHOICES = (
         ('PRO', 'PRO'),
     )
-    
+
     dataScientist = models.ForeignKey(DataScientist, on_delete=models.CASCADE)
     type = models.CharField('Type', max_length = 4, choices = TYPE_CHOICES)
     startDate = models.DateTimeField(null = True)
@@ -72,21 +80,21 @@ class Offer(models.Model):
 
     def __str__(self):
         return self.title
-    
+
 class Submition(models.Model):
-    
+
     STATUS_CHOICES = (
         ('SU', 'SUBMITTED'),
         ('AC', 'ACEPTED'),
         ('RE', 'REJECTED')
     )
-    
+
     dataScientist = models.ForeignKey(DataScientist, on_delete=models.CASCADE)
     offer = models.OneToOneField(Offer, on_delete=models.CASCADE,)
     file = models.CharField('File', max_length = 100)
     comments = models.CharField('Comments', max_length = 100)
     status = models.CharField('Status', max_length = 9, choices = STATUS_CHOICES)
-    
+
 
     def __str__(self):
         res = 'Submition ' + self.offer.title + ' from ' + self.dataScientist.name

@@ -96,6 +96,9 @@ def populate(request):
         message3 = Message.objects.create(receiver = company1, sender = admin, title = "Welcome!", body= "Welcome to DataMe!", isAlert=False)
         message4 = Message.objects.create(receiver = company2, sender = admin, title = "Welcome!", body= "Welcome to DataMe!", isAlert=False)
 
+        review1 = Review.objects.create(reviewed = company1, reviewer = data1, score = 5, comments= "Magnífica empresa, no dudaría en volver a trabajar con ellos")
+        review1 = Review.objects.create(reviewed = data1, reviewer = company1, score = 4, comments= "Gran trabajador. Al final terminó el trabajo 1 día mas tarde de lo que nos dijo, pero aún asi en nuestro rango esperado")
+
         return JsonResponse({'message': 'DB populated'})
     except Exception as e:
         return JsonResponse({'Error': 'DB already populated ' + str(e)})
