@@ -84,6 +84,11 @@ class Change_status(APIView):
                 return JsonResponse({"message": "Only the owner company can do that"}, safe = False)
             else:
                 Submition.objects.all().filter(pk = submitId).update(status = status)
+                dsUser = submit.dataScientist.user
+                comUser = submit.offer.company.user
+                title = "Tu propuesta ha sido actualizada" 
+                body = "Tu propuesta ha sido " + status + ", valora la empresa en tu lista de propuestas"
+                Message.objects.create(receiver = dsUser, sender = comUser, title = title, body = body)
             return JsonResponse({"message": "Status changed"}, safe = False)
         except Exception as e:
             return JsonResponse({"message":"Oops, something went wrong" + str(e)})
