@@ -20,7 +20,18 @@ class Offer_view(APIView):
                     user_applied_offers = [a.offer.id for a in applies]
                     if data.get('search_price') != "undefined" and data.get('search_price') != "":
                         if data.get('search_title') != "undefined":
-                            final_result = Offer.objects.filter(Q(title__contains = data['search_title']) | Q(description__contains = data['search_title']),Q(price_offered__lte = float(data['search_price']) ), limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).values()
+                            if data.get('search_date') != "undefined" and data.get('search_date') != "":
+                                # Time management
+                                date = data.get('search_date').split(" ")[0].split("-")
+                    
+                                limit_time =  datetime.datetime(int(date[0]), int(date[1]), int(date[2]), 10, 10, 0, 0, pytz.UTC)
+                                ofertas = Offer.objects.filter(Q(title__contains = data['search_title']) | Q(description__contains = data['search_title']),Q(price_offered__lte = float(data['search_price']) ), limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).values()
+                                result = list(ofertas)
+                                for idx, o in enumerate(result):
+                                    if(o['limit_time'] < limit_time):
+                                        final_result.append(o)
+                            else:
+                                final_result = Offer.objects.filter(Q(title__contains = data['search_title']) | Q(description__contains = data['search_title']),Q(price_offered__lte = float(data['search_price']) ), limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).values()
                         else:
                             final_result = Offer.objects.filter(Q(price_offered__lte = float(data['search_price'])), limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).values()
                         return JsonResponse(list(final_result), safe=False)
@@ -30,15 +41,11 @@ class Offer_view(APIView):
                             date = data.get('search_date').split(" ")[0].split("-")
                     
                             limit_time =  datetime.datetime(int(date[0]), int(date[1]), int(date[2]), 10, 10, 0, 0, pytz.UTC)
-                            if data.get('search_price') != "undefined" and data.get('search_price') != "":
-                                if data.get('search_title') != "undefined" and data.get('search_title') != "":
-                                    ofertas = Offer.objects.filter(Q(title__contains = data['search_title']) | Q(description__contains = data['search_title']), Q(price_offered__lte = float(data['search_price']) ), limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).values()
-                                else:
-                                    ofertas = Offer.objects.filter(limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).values()
+                            if data.get('search_title') != "undefined" and data.get('search_title') != "":
+                                ofertas = Offer.objects.filter(Q(title__contains = data['search_title']) | Q(description__contains = data['search_title']), limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).values()
                             else:
                                 ofertas = Offer.objects.filter(limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).values()
                             result = list(ofertas)
-                            final_result = []
                             for idx, o in enumerate(result):
                                 if(o['limit_time'] < limit_time):
                                     final_result.append(o)
