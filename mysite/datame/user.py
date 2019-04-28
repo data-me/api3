@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated, NOT
 import traceback
 import datetime
 from django.forms.models import model_to_dict
+from django.contrib.auth import logout
 
 #para dashboard de admin
 class User_view(APIView):
@@ -199,6 +200,19 @@ class delete_user(APIView):
         except:
             traceback.print_exc()
             return JsonResponse({"message": "Sorry! Something went wrong deleting a user..."})
+
+class delete_me(APIView):
+    def post(self, request, format=None):
+        try:
+            logged_user = User.objects.all().get(pk=request.user.id)
+            logout(request)
+            logged_user.delete()
+            return JsonResponse({"message": "Your user has been successfully deleted.",
+                                 "success": True})
+        except:
+            traceback.print_exc()
+            return JsonResponse({"message": "Sorry! Something went wrong deleting your user...",
+                                "success": False})
 
 class change_info(APIView):
     def post(self, request, format=None):
