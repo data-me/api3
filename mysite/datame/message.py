@@ -25,7 +25,6 @@ class Notification_view(APIView):
             for user in all_users:
                 recipient_list.append(user.email)
             #====================
-            recipient_list = ['ivandega22@gmail.com']
             print(recipient_list)
             # Sending individual email for each user
             for recipient in recipient_list:
