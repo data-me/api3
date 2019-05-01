@@ -77,4 +77,5 @@ urlpatterns = [
     path('api/v3/ranking_companies', Ranking_Company_view.as_view()),
     path('api/v3/ranking_datascientists', Ranking_DataScientist_view.as_view()),
     path('api/v3/delete_me', delete_me.as_view()),
+    path('api/v3/notification', Notification_view.as_view()),
 ]

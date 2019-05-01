@@ -3,6 +3,40 @@ from .models import *
 from django.http import JsonResponse
 from django.http import JsonResponse
 from rest_framework.views import APIView
+# Email
+from django.core.mail import send_mail
+from django.conf import settings
+#======
+
+class Notification_view(APIView):
+    def post(self, request, format=None):
+        try:
+            data = request.POST
+
+            subject = data['subject']
+            message = data['body']
+            email_from = settings.EMAIL_HOST_USER # Email sender
+            # Collecting all emails
+            all_users = User.objects.all().exclude(id=request.user.id)
+
+            recipient_list = []
+            for user in all_users:
+                recipient_list.append(user.email)
+            #====================
+            print(recipient_list)
+            # Sending individual email for each user
+            for recipient in recipient_list:
+                receiver = []
+                receiver.append(recipient)
+                print('================================')
+                send_mail( subject, message, email_from, receiver)
+                print('A message was sent')
+                print('================================')
+            return JsonResponse({"message":"Successfully created new notifications for users"})
+        except Exception as e:
+            print(e)
+            return JsonResponse({"message":"Oops, something went wrong"})
+
 
 #para dashboard
 class Messages_view(APIView):

@@ -8,29 +8,29 @@ def populate(request):
         company = Group.objects.create(name='Company')
         dataScientist = Group.objects.create(name='DataScientist')
 
-        admin = User.objects.create_user('admin', email='admin@datame.com', password='admin', is_staff=True)
+        admin = User.objects.create_user('admin', email='ivandega22@gmail.com', password='admin', is_staff=True)
         permissions = Permission.objects.all()
         for p in permissions:
             admin.user_permissions.add(p)
-        data1 = User.objects.create_user(username='data1',email='data1@datame.com',password='123456data1')
+        data1 = User.objects.create_user(username='data1',email='alvaro_1053@hotmail.es',password='123456data1')
         data1.groups.add(dataScientist)
 
-        data2 = User.objects.create_user(username='data2',email='data2@datame.com',password='123456data2')
+        data2 = User.objects.create_user(username='data2',email='ivandega301095@gmail.com',password='123456data2')
         data2.groups.add(dataScientist)
 
-        company1 = User.objects.create_user(username='company1',email='company1@datame.com',password='123456com1')
+        company1 = User.objects.create_user(username='company1',email='aleferpal@alum.us.es',password='123456com1')
         company1.groups.add(company)
 
-        company2 = User.objects.create_user(username='company2',email='company2@datame.com',password='123456com2')
+        company2 = User.objects.create_user(username='company2',email='pabmarfig@gmail.com',password='123456com2')
         company2.groups.add(company)
 
         dataScientist1 = DataScientist.objects.create(user = data1,name = "Jonh",
-        surname = "Doe",email='dataScientist1@gmail.com',
+        surname = "Doe",email='alvaro_1053@hotmail.es',
         photo='https://media.istockphoto.com/photos/smiling-man-picture-id580109640',
         address='C/Reina Mercedes Number 3',phone='628574698')
 
         dataScientist2 = DataScientist.objects.create(user = data2,name = "Jack",
-        surname = "Smith",email='dataScientist1@gmail.com',
+        surname = "Smith",email='ivandega301095@gmail.com',
         photo='https://media.istockphoto.com/photos/portrait-of-a-german-businessman-with-beard-picture-id480286744',
         address='C/Cristo del Amor Number 21',phone='955766587')
 

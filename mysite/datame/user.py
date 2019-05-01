@@ -98,7 +98,7 @@ class Register_view(APIView):
                     address = data['address']
                     phone = data['phone']
                     email = data['email']
-                    newUser = User.objects.create(username = username, password = password)
+                    newUser = User.objects.create(username = username, password = password, email = email)
                     newUser.set_password(password)
                     newUser.groups.add(group)
                     newUser.save()
