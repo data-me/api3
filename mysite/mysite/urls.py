@@ -70,5 +70,12 @@ urlpatterns = [
     path('api/v2/application/<application_id>', Apply_v2_view.as_view()),
     path('api/v2/data/delete_section/<section_id>', Section_delete_view.as_view()),
     path('api/v3/data/create_review', Review_view.as_view()),
-     path('api/v3/data/get_user_reviews', Review_Users_view.as_view()),
+    path('api/v3/data/get_user_reviews', Review_Users_view.as_view()),
+    path('api/v3/reviews', Reviews_view.as_view()),
+    path('api/v3/reviews_companies', Reviews_Company_view.as_view()),
+    path('api/v3/reviews_datascientists', Reviews_DataScientist_view.as_view()),
+    path('api/v3/ranking_companies', Ranking_Company_view.as_view()),
+    path('api/v3/ranking_datascientists', Ranking_DataScientist_view.as_view()),
+
+
 ]

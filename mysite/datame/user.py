@@ -259,3 +259,4 @@ class whoami(APIView):
                             return JsonResponse({'user_type': 'admin'})
                     except:
                         return JsonResponse({'user_type': 'None'})
+
