@@ -22,6 +22,7 @@ class Message(models.Model):
     body = models.TextField('body', max_length = 1000)
     moment = models.DateTimeField(auto_now=True)
     isAlert = models.BooleanField(default=False)
+    viewed = models.BooleanField(default=False)
     def __str__(self):
         return self.title
 

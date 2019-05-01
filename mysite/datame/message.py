@@ -82,11 +82,23 @@ class Message_view(APIView):
             messages = []
             try:
                 messages = Message.objects.all().filter(receiver = user).values()
-                print(messages)
+                Message.objects.all().filter(receiver = user).update(viewed = True)
+                
             except:
                 print("You have 0 messages")
 
             return JsonResponse(list(messages), safe=False)
         except:
             return JsonResponse({"message":"Oops, something went wrong"})
+
+class Unvieweds_view(APIView):
+     def get(self, request, format=None):
+         try:
+            data = request.GET
+            user = request.user
+            messages = Message.objects.all().filter(receiver = user,viewed = False).count()
+            return JsonResponse({"message": messages})
+         except:
+            return JsonResponse({"message":"Oops, something went wrong"})
+             
         
