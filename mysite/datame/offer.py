@@ -11,14 +11,51 @@ class Offer_view(APIView):
     def get(self, request, format=None):
         try:
             data = request.GET
-            if data.get('search') != None:
-                date = datetime.datetime.utcnow()
-                thisDS = DataScientist.objects.all().get(user = request.user)
-                applies = Apply.objects.all().filter(dataScientist = thisDS)
-                user_applied_offers = [a.offer.id for a in applies]
-                
-                ofertas = Offer.objects.filter(Q(title__contains = data['search']) | Q(description__contains = data['search']), limit_time__gte = date, finished=False).exclude(id__in=user_applied_offers).values()
-                return JsonResponse(list(ofertas), safe=False)
+            if data.get('search_title') != None and data.get('search_price') != None and data.get('search_date') != None:
+                try:
+                    date_now = datetime.datetime.utcnow()
+                    final_result = []
+                    thisDS = DataScientist.objects.all().get(user = request.user)
+                    applies = Apply.objects.all().filter(dataScientist = thisDS)
+                    user_applied_offers = [a.offer.id for a in applies]
+                    if data.get('search_price') != "undefined" and data.get('search_price') != "":
+                        if data.get('search_title') != "undefined":
+                            if data.get('search_date') != "undefined" and data.get('search_date') != "":
+                                # Time management
+                                date = data.get('search_date').split(" ")[0].split("-")
+                    
+                                limit_time =  datetime.datetime(int(date[0]), int(date[1]), int(date[2]), 10, 10, 0, 0, pytz.UTC)
+                                ofertas = Offer.objects.filter(Q(title__contains = data['search_title']) | Q(description__contains = data['search_title']),Q(price_offered__lte = float(data['search_price']) ), limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).values()
+                                result = list(ofertas)
+                                for idx, o in enumerate(result):
+                                    if(o['limit_time'] < limit_time):
+                                        final_result.append(o)
+                            else:
+                                final_result = Offer.objects.filter(Q(title__contains = data['search_title']) | Q(description__contains = data['search_title']),Q(price_offered__lte = float(data['search_price']) ), limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).values()
+                        else:
+                            final_result = Offer.objects.filter(Q(price_offered__lte = float(data['search_price'])), limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).values()
+                        return JsonResponse(list(final_result), safe=False)
+                    else:                     
+                        if data.get('search_date') != "undefined" and data.get('search_date') != "":
+                            # Time management
+                            date = data.get('search_date').split(" ")[0].split("-")
+                    
+                            limit_time =  datetime.datetime(int(date[0]), int(date[1]), int(date[2]), 10, 10, 0, 0, pytz.UTC)
+                            if data.get('search_title') != "undefined" and data.get('search_title') != "":
+                                ofertas = Offer.objects.filter(Q(title__contains = data['search_title']) | Q(description__contains = data['search_title']), limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).values()
+                            else:
+                                ofertas = Offer.objects.filter(limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).values()
+                            result = list(ofertas)
+                            for idx, o in enumerate(result):
+                                if(o['limit_time'] < limit_time):
+                                    final_result.append(o)
+                        else:
+                            if data.get('search_title') != "undefined" and data.get('search_title') != "":
+                                final_result = Offer.objects.filter(Q(title__contains = data['search_title']) | Q(description__contains = data['search_title']), limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).values()
+                        return JsonResponse(list(final_result), safe=False)
+                except:
+                    return JsonResponse({"message":"Sorry! Something went wrong..."})
+
             elif data.get('offerId') != None:
                 ofertas = Offer.objects.filter(id = data['offerId']).values()
                 return JsonResponse(list(ofertas), safe=False)
@@ -40,8 +77,7 @@ class Offer_view(APIView):
                     bills_ids = [a.offer.id for a in bills]
                     ofertas = Offer.objects.all().filter(limit_time__gte = date, finished=False).exclude(id__in=user_applied_offers).exclude(id__in=bills_ids).values()
                 return JsonResponse(list(ofertas), safe=False)
-        except Exception as e:
-            print(e)
+        except:
             return JsonResponse({"message":"Sorry! Something went wrong..."})
     def post(self, request, format=None):
         try:

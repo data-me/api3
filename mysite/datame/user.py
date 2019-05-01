@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated, NOT
 import traceback
 import datetime
 from django.forms.models import model_to_dict
+from django.contrib.auth import logout
 
 #para dashboard de admin
 class User_view(APIView):
@@ -83,8 +84,12 @@ class Register_view(APIView):
             username = data['username']
             password = data['password']
             name = data['name']
+            confirm_terms = data['confirmTerms']
+
             if (User.objects.filter(username = username).exists()):
                     res = JsonResponse({"message":"Sorry, username already exists"})
+            elif(confirm_terms=='not_accepted'):
+                    res = JsonResponse({"message":"Need confirmation of terms and conditions"})
             else:
                 if (type == 'DS'):
                     group = Group.objects.get(name = 'DataScientist')
@@ -173,6 +178,7 @@ class list_companies(APIView):
                 traceback.print_exc()
                 return JsonResponse({"message": "Sorry! Something went wrong..."})
             return JsonResponse(list(companies_list), safe=False)
+
 class list_staff(APIView):
     def get(self, request, format=None):
         if request.method == "GET":
@@ -186,6 +192,7 @@ class list_staff(APIView):
                 traceback.print_exc()
                 return JsonResponse({"message": "Sorry! Something went wrong..."})
             return JsonResponse(list(staf_list), safe=False)
+
 class delete_user(APIView):
     def post(self, request, format=None):
         try:
@@ -199,6 +206,19 @@ class delete_user(APIView):
         except:
             traceback.print_exc()
             return JsonResponse({"message": "Sorry! Something went wrong deleting a user..."})
+
+class delete_me(APIView):
+    def post(self, request, format=None):
+        try:
+            logged_user = User.objects.all().get(pk=request.user.id)
+            logout(request)
+            logged_user.delete()
+            return JsonResponse({"message": "Your user has been successfully deleted.",
+                                 "success": True})
+        except:
+            traceback.print_exc()
+            return JsonResponse({"message": "Sorry! Something went wrong deleting your user...",
+                                "success": False})
 
 class change_info(APIView):
     def post(self, request, format=None):

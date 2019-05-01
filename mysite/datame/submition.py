@@ -40,11 +40,11 @@ class Submition_view(APIView):
             user_logged = User.objects.all().get(pk = request.user.id)
             if (user_logged.groups.filter(name='Company').exists()):
                     thisCompany = Company.objects.all().get(user = request.user)
-                    submitions = Submition.objects.filter(offer__company = thisCompany).values('dataScientist_id','offer_id','comments','file','status','offer__title', 'id')
+                    submitions = Submition.objects.filter(offer__company = thisCompany).values('dataScientist_id','offer_id','comments','file','status','offer__title', 'id','offer__company__user_id','dataScientist__user_id')
                     return JsonResponse(list(submitions), safe=False)
             elif(user_logged.groups.filter(name='DataScientist').exists()):
                     dataScientistRecuperado = DataScientist.objects.all().get(user = request.user)
-                    submitions = Submition.objects.filter(dataScientist = dataScientistRecuperado).values('dataScientist_id','offer_id','comments','file','status','offer__title', 'id')
+                    submitions = Submition.objects.filter(dataScientist = dataScientistRecuperado).values('dataScientist_id','offer_id','comments','file','status','offer__title', 'id', 'offer__company__user_id','dataScientist__user_id')
                     return JsonResponse(list(submitions), safe=False)
         except Exception as e:
             return JsonResponse({"message":"Oops, something went wrong" + str(e)})
@@ -84,6 +84,11 @@ class Change_status(APIView):
                 return JsonResponse({"message": "Only the owner company can do that"}, safe = False)
             else:
                 Submition.objects.all().filter(pk = submitId).update(status = status)
+                dsUser = submit.dataScientist.user
+                comUser = submit.offer.company.user
+                title = "Tu propuesta ha sido actualizada" 
+                body = "Tu propuesta ha sido " + status + ", valora la empresa en tu lista de propuestas"
+                Message.objects.create(receiver = dsUser, sender = comUser, title = title, body = body)
             return JsonResponse({"message": "Status changed"}, safe = False)
         except Exception as e:
             return JsonResponse({"message":"Oops, something went wrong" + str(e)})
