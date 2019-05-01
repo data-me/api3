@@ -102,7 +102,7 @@ class Register_view(APIView):
                     newUser.set_password(password)
                     newUser.groups.add(group)
                     newUser.save()
-                    newDs = DataScientist.objects.create(user = newUser, name = name, surname = surname, photo = photo, address = address,email = email, phone = phone)
+                    newDs = DataScientist.objects.create(user = newUser, name = name, surname = surname, photo = photo, address = address, phone = phone)
                     CV.objects.create(owner = newDs)
                     res = JsonResponse({"message":"Successfully created new Data Scientist. Welcome!"})
 
@@ -126,7 +126,8 @@ class Register_view(APIView):
                     description = data['description']
                     nif = data['nif']
                     logo = data['logo']
-                    newUser = User.objects.create(username = username, password = password)
+                    email = data['email']
+                    newUser = User.objects.create(username = username, password = password, email = email)
                     newUser.set_password(password)
                     newUser.groups.add(group)
                     newUser.save()
@@ -149,6 +150,7 @@ class Register_view(APIView):
                     print('Sucessfully created new alert message')
             return res
         except Exception as e:
+            print(e)
             return JsonResponse({"message":"Oops, something went wrong" + str(e)})
 
 class list_dataScientists(APIView):

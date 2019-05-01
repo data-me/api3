@@ -12,6 +12,8 @@ class Notification_view(APIView):
     def post(self, request, format=None):
         try:
             data = request.POST
+            # Ensure user who is sending notification email is admin (staff)
+            User.objects.filter(is_staff=True).get(id=request.user.id)
 
             subject = data['subject']
             message = data['body']
@@ -23,18 +25,22 @@ class Notification_view(APIView):
             for user in all_users:
                 recipient_list.append(user.email)
             #====================
+            recipient_list = ['ivandega22@gmail.com']
             print(recipient_list)
             # Sending individual email for each user
             for recipient in recipient_list:
-                receiver = []
-                receiver.append(recipient)
-                print('================================')
-                send_mail( subject, message, email_from, receiver)
-                print('A message was sent')
-                print('================================')
+                try:
+                    if recipient != "":
+                        receiver = []
+                        receiver.append(recipient)
+                        print('================================')
+                        send_mail( subject, message, email_from, receiver)
+                        print('A message was sent')
+                        print('================================')
+                except:
+                    print('Message was not sent to:', recipient)
             return JsonResponse({"message":"Successfully created new notifications for users"})
-        except Exception as e:
-            print(e)
+        except:
             return JsonResponse({"message":"Oops, something went wrong"})
 
 

@@ -25,12 +25,12 @@ def populate(request):
         company2.groups.add(company)
 
         dataScientist1 = DataScientist.objects.create(user = data1,name = "Jonh",
-        surname = "Doe",email='alvaro_1053@hotmail.es',
+        surname = "Doe",
         photo='https://media.istockphoto.com/photos/smiling-man-picture-id580109640',
         address='C/Reina Mercedes Number 3',phone='628574698')
 
         dataScientist2 = DataScientist.objects.create(user = data2,name = "Jack",
-        surname = "Smith",email='ivandega301095@gmail.com',
+        surname = "Smith",
         photo='https://media.istockphoto.com/photos/portrait-of-a-german-businessman-with-beard-picture-id480286744',
         address='C/Cristo del Amor Number 21',phone='955766587')
 
