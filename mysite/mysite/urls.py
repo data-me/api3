@@ -79,4 +79,5 @@ urlpatterns = [
     path('api/v3/delete_me', delete_me.as_view()),
     path('api/v3/notification', Notification_view.as_view()),
     path('api/v3/unvieweds', Unvieweds_view.as_view()),
+    path('api/v3/section_names_available', Section_names_available_view.as_view()),
 ]

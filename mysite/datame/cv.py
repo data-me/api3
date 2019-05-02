@@ -84,7 +84,7 @@ class Section_view(APIView):
 
             logged_user = DataScientist.objects.all().get(pk = request.user.datascientist.id)
 
-            cv = CV.objects.all().get(owner = logged_user)
+            cv = CV.objects.get(owner = logged_user)
 
             new_section = Section.objects.create(name = sec, cv = cv)
 
@@ -97,6 +97,20 @@ class Section_name_view(APIView):
         if request.method == "GET":
             data = request.GET
             secnames = Section_name.objects.all().values()
+            return JsonResponse(list(secnames), safe=False)
+
+class Section_names_available_view(APIView):
+    def get(self, request, format=None):
+        if request.method == "GET":
+
+            logged_user = DataScientist.objects.all().get(pk=request.user.datascientist.id)
+            curriculum = CV.objects.get(owner=logged_user)
+
+            secnames_in_use_ids = Section.objects.filter(cv = curriculum).values_list('name', flat=True)
+            #secnames_in_use = Section_name.objects.filter(id__in=secnames_in_use_ids)
+
+            secnames = Section_name.objects.all().exclude(id__in=secnames_in_use_ids).values()
+
             return JsonResponse(list(secnames), safe=False)
 
 class Item_delete_view(APIView):
