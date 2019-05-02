@@ -20,7 +20,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'ivandega301095@gmail.com'
-EMAIL_HOST_PASSWORD = 'f@biC@tA22,'
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASS')
 #=======================
 
 
@@ -87,7 +87,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
 )
 
-BASEURL = 'http://localhost:8000'
+BASEURL = 'https://front3-datame.herokuapp.com'
 
 ROOT_URLCONF = 'mysite.urls'
 
@@ -190,7 +190,7 @@ PAYPAL_MODE= "sandbox"
 PAYPAL_CLIENT_ID = "AQnKuEyaCgxZsEBPC-aq3glrpVK1dcTUUbvjkmnguZOM1WLQnsEU-y7i2oh3VkM_Xm4AfbJQx8AKdiYF"
 PAYPAL_CLIENT_SECRET = "EEkGJcVWziLr8FnQFC-BCYX0bcSz_xyh3POT7iR1K9e7fxFLVhI9EJSnOl5Jn3d_UhqydqGEYTfzCozc"
 
-SITE_URL ='http://localhost:8080/'
+SITE_URL ='https://front3-datame.herokuapp.com/'
 
 import django_heroku
 django_heroku.settings(locals())
