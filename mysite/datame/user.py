@@ -70,13 +70,13 @@ class DataScientist_view(APIView):
             print('logged_user: ' + str(logged_user))
             try:
                     dataScientistId = data['dataScientistId']
-                    thisds = DataScientist.objects.all().get(pk = dataScientistId)
+                    thisds = DataScientist.objects.all().filter(pk = dataScientistId).values('name','surname','photo','address','phone','user__email')
 
             except Exception as e:
-                    thisds = DataScientist.objects.all().get(user = user_logged)
+                    thisds = DataScientist.objects.all().filter(user = user_logged).values('name','surname','photo','address','phone','user__email')
 
 
-            return JsonResponse(model_to_dict(thisds), safe=False)
+            return JsonResponse(list(thisds), safe=False)
 
 class Register_view(APIView):
     permission_classes = (~IsAuthenticated,)
@@ -237,7 +237,8 @@ class change_info(APIView):
                 photo = data ['photo']
                 address = data ['address']
                 phone = data ['phone']
-                DataScientist.objects.all().filter(user = user_logged).update(name = name, surname = surname, email = email, photo = photo, address = address, phone = phone)
+                DataScientist.objects.all().filter(user = user_logged).update(name = name, surname = surname, photo = photo, address = address, phone = phone)
+                User.objects.all().filter(pk = user_logged.id).update(email = email)
                 return JsonResponse({"message": "User updated"})
             elif (user_logged.groups.filter(name='Company').exists()):
                 name = data['name']
@@ -260,11 +261,11 @@ class get_user_logged(APIView):
         try:
             user_logged = User.objects.all().get(pk = request.user.id)
             if (user_logged.groups.filter(name='DataScientist').exists()):
-                res = DataScientist.objects.all().get(user = user_logged)
+                res = DataScientist.objects.all().filter(user = user_logged).values('name','surname','photo','address','phone','user__email')
             elif(user_logged.groups.filter(name='Company').exists()):
-                res = Company.objects.all().get(user = user_logged)
+                res = Company.objects.all().filter(user = user_logged).values('name','description','nif','logo','user__email')
 
-            return JsonResponse(model_to_dict(res), safe = False)
+            return JsonResponse(list(res), safe = False)
         except Exception as e:
             return JsonResponse({"message": "Sorry! Something went wrong..." + str(e)})
 
