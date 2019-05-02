@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from rest_framework.views import APIView
 from django.db.models import Q
 from django.http import HttpResponseNotFound
+from django.db.models import Count
 
 from pagos.models import OfferPaypalBill
 
@@ -25,7 +26,7 @@ class Offer_view(APIView):
                                 date = data.get('search_date').split(" ")[0].split("-")
                     
                                 limit_time =  datetime.datetime(int(date[0]), int(date[1]), int(date[2]), 10, 10, 0, 0, pytz.UTC)
-                                ofertas = Offer.objects.filter(Q(title__contains = data['search_title']) | Q(description__contains = data['search_title']),Q(price_offered__lte = float(data['search_price']) ), limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).values()
+                                ofertas = Offer.objects.filter(Q(title__contains = data['search_title']) | Q(description__contains = data['search_title']),Q(price_offered__lte = float(data['search_price']) ), limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).annotate(num_applicantions=Count('apply')).values()
                                 result = list(ofertas)
                                 for idx, o in enumerate(result):
                                     if(o['limit_time'] < limit_time):
@@ -42,7 +43,7 @@ class Offer_view(APIView):
                     
                             limit_time =  datetime.datetime(int(date[0]), int(date[1]), int(date[2]), 10, 10, 0, 0, pytz.UTC)
                             if data.get('search_title') != "undefined" and data.get('search_title') != "":
-                                ofertas = Offer.objects.filter(Q(title__contains = data['search_title']) | Q(description__contains = data['search_title']), limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).values()
+                                ofertas = Offer.objects.filter(Q(title__contains = data['search_title']) | Q(description__contains = data['search_title']), limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).annotate(num_applicantions=Count('apply')).values()
                             else:
                                 ofertas = Offer.objects.filter(limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).values()
                             result = list(ofertas)
@@ -51,7 +52,7 @@ class Offer_view(APIView):
                                     final_result.append(o)
                         else:
                             if data.get('search_title') != "undefined" and data.get('search_title') != "":
-                                final_result = Offer.objects.filter(Q(title__contains = data['search_title']) | Q(description__contains = data['search_title']), limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).values()
+                                final_result = Offer.objects.filter(Q(title__contains = data['search_title']) | Q(description__contains = data['search_title']), limit_time__gte = date_now, finished=False).exclude(id__in=user_applied_offers).annotate(num_applicantions=Count('apply')).values()
                         return JsonResponse(list(final_result), safe=False)
                 except:
                     return JsonResponse({"message":"Sorry! Something went wrong..."})
@@ -66,7 +67,7 @@ class Offer_view(APIView):
                     # All offers instead only those who don't have an applicant
                     bills = OfferPaypalBill.objects.all().filter(pagado=False)
                     bills_ids = [a.offer.id for a in bills]
-                    ofertas = Offer.objects.all().filter(company = thisCompany).exclude(id__in=bills_ids).values()
+                    ofertas = Offer.objects.all().filter(company = thisCompany).exclude(id__in=bills_ids).annotate(num_applicantions=Count('apply')).values()
                 except:
                     date = datetime.datetime.utcnow()
                     thisDS = DataScientist.objects.all().get(user = request.user)
@@ -75,7 +76,7 @@ class Offer_view(APIView):
                     # All offers whos time has not come yet
                     bills = OfferPaypalBill.objects.all().filter(pagado=False)
                     bills_ids = [a.offer.id for a in bills]
-                    ofertas = Offer.objects.all().filter(limit_time__gte = date, finished=False).exclude(id__in=user_applied_offers).exclude(id__in=bills_ids).values()
+                    ofertas = Offer.objects.all().filter(limit_time__gte = date, finished=False).exclude(id__in=user_applied_offers).exclude(id__in=bills_ids).annotate(num_applicantions=Count('apply')).values()
                 return JsonResponse(list(ofertas), safe=False)
         except:
             return JsonResponse({"message":"Sorry! Something went wrong..."})
