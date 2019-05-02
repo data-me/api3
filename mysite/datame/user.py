@@ -8,6 +8,9 @@ import datetime
 from django.forms.models import model_to_dict
 from django.contrib.auth import logout
 
+from django.utils import timezone
+
+
 #para dashboard de admin
 class User_view(APIView):
     def get(self, request, format=None):
@@ -268,17 +271,24 @@ class get_user_logged(APIView):
 class whoami(APIView):
     def get(self, request, format=None):
             try:
-                request.user.datascientist
-                return JsonResponse({'user_type': 'ds'})
+                ds = request.user.datascientist
+                user_plan = UserPlan.objects.order_by('id').filter(dataScientist=ds).last()
+
+                ads="true"
+                if user_plan:
+                    hoy = timezone.now()
+                    if user_plan.expirationDate >= hoy:
+                        ads="false"
+                return JsonResponse({'user_type': 'ds','ads':ads})
             except:
                 try:
                     request.user.company
-                    return JsonResponse({'user_type': 'com'})
+                    return JsonResponse({'user_type': 'com','ads':'false'})
                 except:
                     try:
                         user_logged = request.user
                         if(user_logged.is_superuser or user_logged.is_staff):
-                            return JsonResponse({'user_type': 'admin'})
+                            return JsonResponse({'user_type': 'admin','ads':'false'})
                     except:
-                        return JsonResponse({'user_type': 'None'})
+                        return JsonResponse({'user_type': 'None','ads':'true'})
 
