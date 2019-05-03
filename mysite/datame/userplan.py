@@ -67,10 +67,26 @@ class currentUserPlan(APIView):
                     response['currentUserPlan'] = 'FREE'
                     response['expirationDate'] = ''
                     response['startDate'] = ''
+                    response['nMonthsToExpire'] = ''
+                    response['maxMonthsToExtend'] = '24'
+
                 elif currentUserPlan is not None and datetime.now(pytz.utc) < currentUserPlan.expirationDate:
                     response['currentUserPlan'] = 'PRO'
                     response['expirationDate'] = str(currentUserPlan.expirationDate)
                     response['startDate'] = str(currentUserPlan.startDate)
+                    # Calculating the number of months for the plan to expire
+                    nMonthsToExpire = (currentUserPlan.expirationDate.year
+                                     - (datetime.now(pytz.utc)).year) * 12 \
+                                    + (currentUserPlan.expirationDate.month
+                                     - (datetime.now(pytz.utc)).month)
+                    response['nMonthsToExpire'] = str(nMonthsToExpire)
+
+                    # Calculating the maximum number of months the plan can be extended
+                    maxMonthsToExtend = ((datetime.now(pytz.utc)+relativedelta(months=+24)).year
+                                         - currentUserPlan.expirationDate.year) * 12 \
+                                        + ((datetime.now(pytz.utc)+relativedelta(months=+24)).month
+                                         - currentUserPlan.expirationDate.month)
+                    response['maxMonthsToExtend'] = str(maxMonthsToExtend)
                 else:
                     response['message'] = 'Sorry, we could not retrieve data scientist userPlan data.'
             except:
