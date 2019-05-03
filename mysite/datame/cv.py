@@ -161,7 +161,7 @@ class Item_view(APIView):
                     date_start = data['datestart']
                     date_finish = request.POST.get('datefinish')
 
-                    if date_finish != None:
+                    if date_finish != None and date_finish != '':
                         if date_start < date_finish:
 
                             try:
@@ -195,6 +195,7 @@ class Item_view(APIView):
                             item_tosave.description = data['description']
                             item_tosave.entity = data['entity']
                             item_tosave.date_start = date_start
+                            item_tosave.date_finish = date_finish
 
                             item_tosave.save()
 
