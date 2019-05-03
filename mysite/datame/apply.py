@@ -68,7 +68,7 @@ class Apply_view(APIView):
                 if(apply.dataScientist.id == dataScientist.id):
                     return JsonResponse({"message":"DataScientist already applied"})
             new_apply = Apply.objects.create(title=title, description=description, status='PE', date=date, dataScientist = dataScientist, offer = offer)
-            return JsonResponse({"message":"Successfully created new apply"})
+            return JsonResponse({"message":"Successfully created new application"})
         except:
             return JsonResponse({"message":"Oops, something went wrong"})
     def get(self, request, format=None):

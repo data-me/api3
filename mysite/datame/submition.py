@@ -9,7 +9,7 @@ class Submitions_view(APIView):
     def get(self, request, format=None):
         user_logged = User.objects.all().get(pk = request.user.id)
         if (user_logged.is_superuser or user_logged.is_staff):
-            try:    
+            try:
                 submitions = Submition.objects.all().values()
                 return JsonResponse(list(submitions), safe=False)
             except:
@@ -31,7 +31,7 @@ class Submition_view(APIView):
                 dataScientist = DataScientist.objects.all().get(user = request.user)
                 offer = Offer.objects.all().get(pk = offerId)
                 Submition.objects.create(offer = offer, dataScientist = dataScientist, file = file, comments = comments, status = 'SU')
-                res = JsonResponse({"message":"Submition created successfully"})
+                res = JsonResponse({"message":"Proposal created successfully"})
             return res
         except Exception as e:
             return JsonResponse({"message":"Oops, something went wrong" + str(e)})
@@ -48,7 +48,7 @@ class Submition_view(APIView):
                     return JsonResponse(list(submitions), safe=False)
         except Exception as e:
             return JsonResponse({"message":"Oops, something went wrong" + str(e)})
-        
+
 class Check_submition(APIView):
     permission_classes = (IsAuthenticated,)
     def post(self, request, format=None):
@@ -67,7 +67,7 @@ class Check_submition(APIView):
             return res
         except Exception as e:
             return JsonResponse({"message":"Oops, something went wrong" + str(e)})
-        
+
 class Change_status(APIView):
     permission_classes = (IsAuthenticated,)
     def post(self, request, format=None):
@@ -86,7 +86,7 @@ class Change_status(APIView):
                 Submition.objects.all().filter(pk = submitId).update(status = status)
                 dsUser = submit.dataScientist.user
                 comUser = submit.offer.company.user
-                title = "Tu propuesta ha sido actualizada" 
+                title = "Tu propuesta ha sido actualizada"
                 body = "Tu propuesta ha sido " + status + ", valora la empresa en tu lista de propuestas"
                 Message.objects.create(receiver = dsUser, sender = comUser, title = title, body = body)
             return JsonResponse({"message": "Status changed"}, safe = False)
